@@ -1200,3 +1200,31 @@ cc_test(
         "@com_google_absl//absl/strings",
     ],
 )
+
+cc_library(
+    name = "udp_calculator",
+    srcs = ["udp_calculator.cc"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/api2:node",
+        "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/port:ret_check",
+        "//mediapipe/framework/port:status",
+    ],
+    alwayslink = 1,
+)
+
+cc_library(
+    name = "pass_through_udp_calculator",
+    srcs = ["pass_through_udp_calculator.cc"],
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/formats:landmark_cc_proto",
+        "//mediapipe/framework/port:status",
+    ],
+    alwayslink = 1,
+)

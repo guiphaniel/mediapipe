@@ -18,6 +18,7 @@
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/parse_text_proto.h"
 #include "mediapipe/framework/port/status.h"
+#include <iostream>
 
 namespace mediapipe {
 
@@ -47,7 +48,7 @@ absl::Status PrintHelloWorld() {
   // Give 10 input packets that contains the same std::string "Hello World!".
   for (int i = 0; i < 10; ++i) {
     MP_RETURN_IF_ERROR(graph.AddPacketToInputStream(
-        "in", MakePacket<std::string>("Hello World!").At(Timestamp(i))));
+        "in", MakePacket<std::string>("Hello World!").At(Timestamp(i))));   
   }
   // Close the input stream "in".
   MP_RETURN_IF_ERROR(graph.CloseInputStream("in"));
@@ -55,6 +56,7 @@ absl::Status PrintHelloWorld() {
   // Get the output packets std::string.
   while (poller.Next(&packet)) {
     LOG(INFO) << packet.Get<std::string>();
+      //std::cout << packet.Get<std::string>();
   }
   return graph.WaitUntilDone();
 }
@@ -62,6 +64,6 @@ absl::Status PrintHelloWorld() {
 
 int main(int argc, char** argv) {
   google::InitGoogleLogging(argv[0]);
-  CHECK(mediapipe::PrintHelloWorld().ok());
+  CHECK(mediapipe::PrintHelloWorld().ok());  
   return 0;
 }

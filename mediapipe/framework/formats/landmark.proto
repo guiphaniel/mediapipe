@@ -61,3 +61,12 @@ message NormalizedLandmark {
 message NormalizedLandmarkList {
   repeated NormalizedLandmark landmark = 1;
 }
+
+message NormalizedLandmarkListTagged {
+  optional string tag = 1;
+  optional NormalizedLandmarkList landmarkList = 2;
+}
+
+message NormalizedLandmarkListTaggedVector {
+  repeated NormalizedLandmarkListTagged landmarkListTagged = 1;
+}
