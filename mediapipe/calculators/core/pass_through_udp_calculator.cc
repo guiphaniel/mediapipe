@@ -121,21 +121,21 @@ class PassThroughUDPCalculator : public CalculatorBase {
     for (CollectionItemId id = cc->Inputs().BeginId();
          id < cc->Inputs().EndId(); ++id) {
       if (cc->Inputs().Get(id).IsEmpty()) {   
-        std::cout << "Empty !" << std::endl;    
+        //std::cout << "Empty !" << std::endl;    
         NormalizedLandmarkListTagged taggedList; 
         taggedList.set_tag(cc->Inputs().Get(id).Name());        
-        /*NormalizedLandmarkList* tmpList = new NormalizedLandmarkList();
+        auto tmpList = std::make_unique<NormalizedLandmarkList>();
         tmpList->InitAsDefaultInstance();
-        taggedList.set_allocated_landmarklist(tmpList);*/
+        taggedList.set_allocated_landmarklist(tmpList.release());
         vector.add_landmarklisttagged()->CopyFrom(taggedList);  
       } else {
-        std::cout << "Fulfilled !" << std::endl;   
+        //std::cout << "Fulfilled !" << std::endl;   
         NormalizedLandmarkListTagged taggedList; 
-        taggedList.set_tag(cc->Inputs().Get(id).Name());        
-        NormalizedLandmarkList* tmpList = new NormalizedLandmarkList();
+        taggedList.set_tag(cc->Inputs().Get(id).Name());   
+        auto tmpList = std::make_unique<NormalizedLandmarkList>();
         const NormalizedLandmarkList& list = cc->Inputs().Get(id).Get<NormalizedLandmarkList>();
         tmpList->CopyFrom(list);
-        taggedList.set_allocated_landmarklist(tmpList);
+        taggedList.set_allocated_landmarklist(tmpList.release());
         vector.add_landmarklisttagged()->CopyFrom(taggedList);       
 
         VLOG(3) << "Passing " << cc->Inputs().Get(id).Name() << " to "
@@ -146,13 +146,19 @@ class PassThroughUDPCalculator : public CalculatorBase {
       //std::cout << "n" << i << " : " << cc->Inputs().Get(id).Name() << std::endl;
       i++;
     }
+    char* array = new char[vector.ByteSize()];
 
-    std::string msg_buffer;
-    vector.SerializeToString(&msg_buffer);
-    std::cout << msg_buffer << std::endl;
-    Sleep(3000);
-    sendto(sckt, msg_buffer.c_str(), msg_buffer.length(), 0, reinterpret_cast<const sockaddr*>(&dst), sizeof(dst));
-    
+    vector.SerializeToArray(array, vector.ByteSize());
+    std::cout << vector.ByteSize() << std::endl;
+    sendto(sckt, array, vector.ByteSize(), 0, reinterpret_cast<const sockaddr*>(&dst), sizeof(dst));
+    //Sleep(3000);
+
+    return absl::OkStatus();
+  }
+
+  absl::Status Close(CalculatorContext* cc) final {
+    closesocket(sckt);
+    WSACleanup();
 
     return absl::OkStatus();
   }

@@ -90,6 +90,13 @@ class UDPCalculator : public Node {
     }
     return absl::OkStatus();
   }
+
+  absl::Status Close(CalculatorContext* cc) final {
+    closesocket(sckt);
+    WSACleanup();
+
+    return absl::OkStatus();
+  }
 };
 MEDIAPIPE_REGISTER_NODE(UDPCalculator);
 
