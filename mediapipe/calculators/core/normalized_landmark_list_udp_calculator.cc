@@ -123,7 +123,7 @@ class NormalizedLandmarkListUDPCalculator : public CalculatorBase {
     char* array = new char[vector.ByteSize()];
 
     vector.SerializeToArray(array, vector.ByteSize());
-    std::cout << vector.ByteSize() << std::endl;
+    //std::cout << vector.ByteSize() << std::endl;
     sendto(sckt, array, vector.ByteSize(), 0, reinterpret_cast<const sockaddr*>(&dst), sizeof(dst));
     //Sleep(3000);
 
