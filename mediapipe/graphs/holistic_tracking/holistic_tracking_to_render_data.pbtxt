@@ -134,6 +134,14 @@ node {
   }
 }
 
+node {
+  calculator: "NormalizedLandmarkListUDPCalculator"
+  input_stream: "landmarks_merged"
+  input_stream: "left_hand_landmarks"
+  input_stream: "right_hand_landmarks"
+  input_stream: "face_landmarks"
+}
+
 # Takes left pose landmarks.
 node {
   calculator: "SplitNormalizedLandmarkListCalculator"

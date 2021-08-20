@@ -32,8 +32,6 @@ constexpr char kLeftHandTag[] = "MY_LEFT_HAND_LANDMARKS";
 constexpr char kRightHandTag[] = "MY_RIGHT_HAND_LANDMARKS";
 constexpr char kFaceTag[] = "MY_FACE_LANDMARKS";*/
 
-std::string tags[] = {"MY_POSE_LANDMARKS", "MY_LEFT_HAND_LANDMARKS", "MY_RIGHT_HAND_LANDMARKS", "MY_FACE_LANDMARKS"};
-
 void setupUDP() {
   WSAStartup(MAKEWORD(2, 0), &WSAData);
 
@@ -57,35 +55,16 @@ void setupUDP() {
 // packets will be ignored (allowing PassThroughCalculator to be used to
 // test internal behavior).  Any options may be specified and will be
 // ignored.
-class PassThroughUDPCalculator : public CalculatorBase {
+class NormalizedLandmarkListUDPCalculator : public CalculatorBase {
  public:
   static absl::Status GetContract(CalculatorContract* cc) {
-    if (!cc->Inputs().TagMap()->SameAs(*cc->Outputs().TagMap())) {
-      return absl::InvalidArgumentError(
-          "Input and output streams to PassThroughCalculator must use "
-          "matching tags and indexes.");
-    }
     for (CollectionItemId id = cc->Inputs().BeginId();
          id < cc->Inputs().EndId(); ++id) {
       cc->Inputs().Get(id).SetAny();
-      cc->Outputs().Get(id).SetSameAs(&cc->Inputs().Get(id));
     }
     for (CollectionItemId id = cc->InputSidePackets().BeginId();
          id < cc->InputSidePackets().EndId(); ++id) {
       cc->InputSidePackets().Get(id).SetAny();
-    }
-    if (cc->OutputSidePackets().NumEntries() != 0) {
-      if (!cc->InputSidePackets().TagMap()->SameAs(
-              *cc->OutputSidePackets().TagMap())) {
-        return absl::InvalidArgumentError(
-            "Input and output side packets to PassThroughCalculator must use "
-            "matching tags and indexes.");
-      }
-      for (CollectionItemId id = cc->InputSidePackets().BeginId();
-           id < cc->InputSidePackets().EndId(); ++id) {
-        cc->OutputSidePackets().Get(id).SetSameAs(
-            &cc->InputSidePackets().Get(id));
-      }
     }
 
     setupUDP();
@@ -137,11 +116,6 @@ class PassThroughUDPCalculator : public CalculatorBase {
         tmpList->CopyFrom(list);
         taggedList.set_allocated_landmarklist(tmpList.release());
         vector.add_landmarklisttagged()->CopyFrom(taggedList);       
-
-        VLOG(3) << "Passing " << cc->Inputs().Get(id).Name() << " to "
-                << cc->Outputs().Get(id).Name() << " at "
-                << cc->InputTimestamp().DebugString();
-        cc->Outputs().Get(id).AddPacket(cc->Inputs().Get(id).Value());
       }
       //std::cout << "n" << i << " : " << cc->Inputs().Get(id).Name() << std::endl;
       i++;
@@ -163,6 +137,6 @@ class PassThroughUDPCalculator : public CalculatorBase {
     return absl::OkStatus();
   }
 };
-REGISTER_CALCULATOR(PassThroughUDPCalculator);
+REGISTER_CALCULATOR(NormalizedLandmarkListUDPCalculator);
 
 }  // namespace mediapipe

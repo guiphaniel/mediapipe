@@ -32,6 +32,7 @@ mediapipe_simple_subgraph(
         "//mediapipe/calculators/core:merge_calculator",
         "//mediapipe/calculators/core:split_landmarks_calculator",
         "//mediapipe/calculators/core:split_vector_calculator",
+        "//mediapipe/calculators/core:normalized_landmark_list_udp_calculator",
         "//mediapipe/calculators/util:detections_to_render_data_calculator",
         "//mediapipe/calculators/util:landmarks_to_render_data_calculator",
         "//mediapipe/calculators/util:rect_to_render_data_calculator",
